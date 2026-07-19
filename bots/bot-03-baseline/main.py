@@ -5,6 +5,7 @@ import time
 import json
 import csv
 import pickle
+from datetime import datetime
 
 # Access Arithmetic Coder
 from bots.bot_09_arithmetic_coder.main import ArithmeticCoder
@@ -89,7 +90,46 @@ def main():
                 "Neural_Time_MS": res["Neural_Time_MS"]
             })
             
-    print(f"Baselines successfully updated in {csv_file} for bio-datasets.")
+    # Calculate hourly average log updates
+    hourly_csv = "experiments/logs/hourly_averages.csv"
+    hourly_exists = os.path.exists(hourly_csv)
+    
+    # Read the last hour logs from the performance tracker
+    total_zlib_ratio = 0.0
+    total_neural_ratio = 0.0
+    total_neural_time = 0.0
+    count = 0
+    
+    if os.path.exists(csv_file):
+        with open(csv_file, "r") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    total_zlib_ratio += float(row["Zlib_Ratio"])
+                    total_neural_ratio += float(row["Neural_Ratio"])
+                    total_neural_time += float(row["Neural_Time_MS"])
+                    count += 1
+                except:
+                    pass
+                    
+    if count > 0:
+        avg_zlib_ratio = round(total_zlib_ratio / count, 4)
+        avg_neural_ratio = round(total_neural_ratio / count, 4)
+        avg_neural_time = round(total_neural_time / count, 4)
+        
+        with open(hourly_csv, "a", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["Timestamp", "Average_Zlib_Ratio", "Average_Neural_Ratio", "Average_Neural_Time_MS", "Evaluated_Test_Count"])
+            if not hourly_exists:
+                writer.writeheader()
+            writer.writerow({
+                "Timestamp": timestamp,
+                "Average_Zlib_Ratio": avg_zlib_ratio,
+                "Average_Neural_Ratio": avg_neural_ratio,
+                "Average_Neural_Time_MS": avg_neural_time,
+                "Evaluated_Test_Count": count
+            })
+            
+    print(f"Baselines and hourly averages successfully updated in {hourly_csv}")
 
 if __name__ == "__main__":
     main()
