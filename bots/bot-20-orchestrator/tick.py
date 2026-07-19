@@ -9,13 +9,12 @@ def main():
     os.makedirs("data", exist_ok=True)
     os.makedirs("experiments/logs", exist_ok=True)
     
-    # Define agent schedule and tasks sequentially (run rnn prediction model before benchmarking)
     agents_workflow = [
         ("bot-02", "bots/bot-02-dataset/main.py"),
         ("bot-01", "bots/bot-01-literature/main.py"),
         ("bot-04", "bots/bot-04-tokenizer/main.py"),
         ("bot-05", "bots/bot-05-predictor-rnn/main.py"),
-        ("bot-03", "bots/bot-03-baseline/main.py"), # Benchmarks Zlib vs Neural
+        # ("bot-03", "bots/bot-03-baseline/main.py"), # Frozen during bugfix window
     ]
     
     # Run each agent sequential sequence

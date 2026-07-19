@@ -1,6 +1,10 @@
 # ml-compress-research
 
+> [!WARNING]
+> Benchmarks between 2026-07-19 13:57 and this commit are INVALID due to a metric + losslessness bug. Do not cite.
+
 Scientific datasets neural compression research using small pre-trained predictors.
+
 
 ## Target Metric Goals
 
