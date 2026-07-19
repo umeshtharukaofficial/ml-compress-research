@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 def main():
     print("Running bot-02-dataset collector...")
