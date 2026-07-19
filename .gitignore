@@ -95,6 +95,7 @@ venv.bak/
 data/
 experiments/logs/*.json
 !experiments/logs/.gitkeep
+!experiments/logs/*.csv
 *.pt
 *.bin
 *.onnx
@@ -102,8 +103,6 @@ experiments/logs/*.json
 *.zip
 *.fastq
 *.fasta
-experiments/logs/*.json
-!experiments/logs/.gitkeep
-experiments/logs/*.csv
 *.parquet
+
 
