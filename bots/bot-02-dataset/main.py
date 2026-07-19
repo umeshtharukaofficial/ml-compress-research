@@ -1,20 +1,23 @@
 import os
 import sys
-import urllib.request
 
 def main():
-    print("Running bot-02-dataset collector...")
-    # Target some sample genomic reads or scientific datasets (using small public sequences for testing)
+    print("Running bot-02-dataset generator...")
     os.makedirs("data", exist_ok=True)
     
-    url = "https://raw.githubusercontent.com/nih-cfde/gtex-analysis/master/README.md"
-    target_path = "data/scientific_sample.txt"
+    # Generate datasets of varying sizes (small, medium, large)
+    # Using repeating character patterns so they compress differently
+    datasets = {
+        "small_sample.txt": ("A" * 1000 + "B" * 500 + "C" * 250),
+        "medium_sample.txt": ("A" * 10000 + "B" * 5000 + "C" * 2500),
+        "large_sample.txt": ("A" * 100000 + "B" * 50000 + "C" * 25000)
+    }
     
-    try:
-        urllib.request.urlretrieve(url, target_path)
-        print(f"Dataset retrieved successfully at {target_path}")
-    except Exception as e:
-        print(f"Error fetching dataset: {e}")
+    for filename, content in datasets.items():
+        filepath = os.path.join("data", filename)
+        with open(filepath, "w") as f:
+            f.write(content)
+        print(f"Generated dataset {filepath} (Size: {len(content)} bytes)")
 
 if __name__ == "__main__":
     main()
