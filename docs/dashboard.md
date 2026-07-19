@@ -3,7 +3,7 @@
 Real-time tracking of the 20 automated research agents.
 
 ## System Health
-*   **Orchestrator Status**: Active (Local Daemon running)
+*   **Orchestrator Status**: Active (Local Daemon running all bots)
 *   **Last Global Tick**: Initial Scaffold Set Up
 
 ## Active Jobs & Current Tasks
