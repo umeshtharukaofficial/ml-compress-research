@@ -48,6 +48,13 @@ Scientific datasets neural compression research using small pre-trained predicto
 
 
 
+
+
 ## Daily Update Summary
-*   **Last Daily Run**: 2026-07-19 12:00:36 UTC
-*   **Status**: Bots 01-05 ran successfully. Baseline ratios saved. Predictor marks updated.
+*   **Last Daily Run**: 2026-07-19 12:05:17 UTC
+*   **Status**: Multi-scale datasets successfully generated & evaluated. RNN Markov trained on multiple variants.
+**Latest Performance Stats (Conventional Baseline):**
+* 2026-07-19 12:05:17,small_sample.txt,1750,25,70.0,0.1042
+* 2026-07-19 12:05:17,medium_sample.txt,17500,46,380.4348,0.1254
+* 2026-07-19 12:05:17,large_sample.txt,175000,198,883.8384,0.9375
+
