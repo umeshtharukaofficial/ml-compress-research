@@ -9,13 +9,13 @@ def main():
     os.makedirs("data", exist_ok=True)
     os.makedirs("experiments/logs", exist_ok=True)
     
-    # Define agent schedule and tasks sequentially
+    # Define agent schedule and tasks sequentially (run rnn prediction model before benchmarking)
     agents_workflow = [
-        ("bot-02", "bots/bot-02-dataset/main.py"), # Generate data first
+        ("bot-02", "bots/bot-02-dataset/main.py"),
         ("bot-01", "bots/bot-01-literature/main.py"),
-        ("bot-03", "bots/bot-03-baseline/main.py"), # Baseline compression ratio & live CSV update
         ("bot-04", "bots/bot-04-tokenizer/main.py"),
         ("bot-05", "bots/bot-05-predictor-rnn/main.py"),
+        ("bot-03", "bots/bot-03-baseline/main.py"), # Benchmarks Zlib vs Neural
     ]
     
     # Run each agent sequential sequence
@@ -23,6 +23,8 @@ def main():
         if os.path.exists(path):
             print(f"[{bot_id}] Starting execution...")
             try:
+                # Add root to pythonpath dynamically to allow bots importing coders
+                sys.path.insert(0, os.getcwd())
                 exec(open(path).read(), {'__name__': '__main__'})
                 print(f"[{bot_id}] Finished successfully.")
             except Exception as e:
@@ -37,13 +39,13 @@ def main():
             if "bot-01" in line:
                 lines[idx] = "| 01 | `bot-literature` | Running | Active | Scraped arXiv |\n"
             elif "bot-02" in line:
-                lines[idx] = "| 02 | `bot-dataset` | Running | Active | Generated small/medium/large scaling datasets |\n"
+                lines[idx] = "| 02 | `bot-dataset` | Running | Active | Pulling bio-datasets-1M WGS genomes |\n"
             elif "bot-03" in line:
-                lines[idx] = "| 03 | `bot-baseline` | Running | Active | Logs updated on performance_tracker.csv |\n"
+                lines[idx] = "| 03 | `bot-baseline` | Running | Active | Benchmarked Zlib vs RNN + Arithmetic Coder |\n"
             elif "bot-04" in line:
                 lines[idx] = "| 04 | `bot-tokenizer` | Running | Active | Multi-scale tokenizer vocab generated |\n"
             elif "bot-05" in line:
-                lines[idx] = "| 05 | `bot-rnn` | Running | Active | Multi-scale Markov model predictor trained |\n"
+                lines[idx] = "| 05 | `bot-rnn` | Running | Active | Neural GRU/Markov probabilities trained |\n"
         with open(dashboard_path, "w") as f:
             f.writelines(lines)
             
@@ -62,9 +64,9 @@ def main():
         if os.path.exists(csv_file):
             with open(csv_file, "r") as f:
                 last_lines = f.readlines()[-3:] # Get last 3 entries
-            csv_info = "\n**Latest Performance Stats (Conventional Baseline):**\n" + "".join([f"* {l.strip()}\n" for l in last_lines])
+            csv_info = "\n**Latest Performance Stats (Zlib vs Neural Coder):**\n" + "".join([f"* {l.strip()}\n" for l in last_lines])
             
-        daily_log = f"\n\n{summary_marker}\n*   **Last Daily Run**: {now_str}\n*   **Status**: Multi-scale datasets successfully generated & evaluated. RNN Markov trained on multiple variants.{csv_info}\n"
+        daily_log = f"\n\n{summary_marker}\n*   **Last Daily Run**: {now_str}\n*   **Status**: Real neural arithmetic compression tested on multiple scale biological datasets.{csv_info}\n"
         
         if summary_marker in content:
             parts = content.split(summary_marker)

@@ -4,13 +4,25 @@ import zlib
 import time
 import json
 import csv
+import pickle
+
+# Access Arithmetic Coder
+from bots.bot_09_arithmetic_coder.main import ArithmeticCoder
 
 def main():
-    print("Running bot-03-baseline analysis...")
+    print("Running bot-03-baseline neural evaluation analysis...")
     os.makedirs("data", exist_ok=True)
     os.makedirs("experiments/logs", exist_ok=True)
     
-    # Process files downloaded in /data folder
+    # Load RNN Model
+    model_path = "src/models/rnn_model.pkl"
+    probabilities = {}
+    if os.path.exists(model_path):
+        with open(model_path, "rb") as f:
+            probabilities = pickle.load(f)
+            
+    coder = ArithmeticCoder(probabilities)
+    
     files = [f for f in os.listdir("data") if os.path.isfile(os.path.join("data", f))]
     if not files:
         print("Data directory empty. No files to test.")
@@ -19,25 +31,34 @@ def main():
     results = []
     for filename in files:
         filepath = os.path.join("data", filename)
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            data_str = f.read()
         with open(filepath, "rb") as f:
-            data = f.read()
+            data_bytes = f.read()
             
-        if len(data) == 0:
+        if len(data_bytes) == 0:
             continue
             
-        start_time = time.time()
-        compressed = zlib.compress(data, level=9)
-        end_time = time.time()
+        # 1. Evaluate standard Zlib baseline
+        zlib_start = time.time()
+        zlib_compressed = zlib.compress(data_bytes, level=9)
+        zlib_end = time.time()
+        zlib_ratio = len(data_bytes) / len(zlib_compressed) if len(zlib_compressed) > 0 else 1.0
         
-        ratio = len(data) / len(compressed) if len(compressed) > 0 else 1.0
-        time_ms = (end_time - start_time) * 1000
+        # 2. Evaluate our Neural Predictor + Arithmetic Coder
+        neural_start = time.time()
+        neural_compressed_size = coder.compress(data_str)
+        neural_end = time.time()
+        neural_ratio = len(data_bytes) / neural_compressed_size if neural_compressed_size > 0 else 1.0
         
         results.append({
             "File": filename,
-            "Original_Bytes": len(data),
-            "Compressed_Bytes": len(compressed),
-            "Compression_Ratio": round(ratio, 4),
-            "Time_MS": round(time_ms, 4)
+            "Original_Bytes": len(data_bytes),
+            "Zlib_Compressed_Bytes": len(zlib_compressed),
+            "Zlib_Ratio": round(zlib_ratio, 4),
+            "Neural_Compressed_Bytes": neural_compressed_size,
+            "Neural_Ratio": round(neural_ratio, 4),
+            "Neural_Time_MS": round((neural_end - neural_start) * 1000, 4)
         })
         
     # Log JSON configuration
@@ -48,7 +69,11 @@ def main():
     csv_file = "experiments/logs/performance_tracker.csv"
     file_exists = os.path.exists(csv_file)
     with open(csv_file, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Timestamp", "File", "Original_Bytes", "Compressed_Bytes", "Compression_Ratio", "Time_MS"])
+        writer = csv.DictWriter(f, fieldnames=[
+            "Timestamp", "File", "Original_Bytes", 
+            "Zlib_Compressed_Bytes", "Zlib_Ratio", 
+            "Neural_Compressed_Bytes", "Neural_Ratio", "Neural_Time_MS"
+        ])
         if not file_exists:
             writer.writeheader()
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -57,9 +82,11 @@ def main():
                 "Timestamp": timestamp,
                 "File": res["File"],
                 "Original_Bytes": res["Original_Bytes"],
-                "Compressed_Bytes": res["Compressed_Bytes"],
-                "Compression_Ratio": res["Compression_Ratio"],
-                "Time_MS": res["Time_MS"]
+                "Zlib_Compressed_Bytes": res["Zlib_Compressed_Bytes"],
+                "Zlib_Ratio": res["Zlib_Ratio"],
+                "Neural_Compressed_Bytes": res["Neural_Compressed_Bytes"],
+                "Neural_Ratio": res["Neural_Ratio"],
+                "Neural_Time_MS": res["Neural_Time_MS"]
             })
             
     print(f"Baselines successfully updated in {csv_file} for bio-datasets.")
