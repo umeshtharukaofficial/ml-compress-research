@@ -14,7 +14,7 @@ def main():
         ("bot-01", "bots/bot-01-literature/main.py"),
         ("bot-04", "bots/bot-04-tokenizer/main.py"),
         ("bot-05", "bots/bot-05-predictor-rnn/main.py"),
-        # ("bot-03", "bots/bot-03-baseline/main.py"), # Frozen during bugfix window
+        ("bot-03", "bots/bot-03-baseline/main.py"), # Benchmarks Zlib vs Neural
     ]
     
     # Run each agent sequential sequence
