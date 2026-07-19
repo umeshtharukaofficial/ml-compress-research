@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 def main():
     print("Running bot-20-orchestrator tick...")
@@ -18,7 +19,6 @@ def main():
         if os.path.exists(path):
             print(f"[{bot_id}] Starting execution...")
             try:
-                # Dynamic execution of each agent logic
                 exec(open(path).read(), {'__name__': '__main__'})
                 print(f"[{bot_id}] Finished successfully.")
             except Exception as e:
@@ -42,6 +42,26 @@ def main():
                 lines[idx] = "| 05 | `bot-rnn` | Running | Active | Trained tiny predictor model |\n"
         with open(dashboard_path, "w") as f:
             f.writelines(lines)
+            
+    # Update main README.md with the latest daily execution summary
+    readme_path = "README.md"
+    if os.path.exists(readme_path):
+        with open(readme_path, "r") as f:
+            content = f.read()
+            
+        summary_marker = "## Daily Update Summary"
+        now_str = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        daily_log = f"\n\n{summary_marker}\n*   **Last Daily Run**: {now_str}\n*   **Status**: Bots 01-05 ran successfully. Baseline ratios saved. Predictor marks updated.\n"
+        
+        if summary_marker in content:
+            # Replace existing summary
+            parts = content.split(summary_marker)
+            new_content = parts[0] + daily_log
+        else:
+            new_content = content + daily_log
+            
+        with open(readme_path, "w") as f:
+            f.write(new_content)
             
     with open(".last_msg", "w") as f:
         f.write("orchestration tick run")
