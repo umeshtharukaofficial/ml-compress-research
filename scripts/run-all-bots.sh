@@ -41,4 +41,5 @@ run_bot 02 43200 & # Bot-02: every 12 hours
 run_bot 03 86400 & # Bot-03: daily
 run_bot 04 3600 & # Bot-04: hourly
 run_bot 05 300 & # Bot-05: every 5 minutes
+run_bot 21 900 & # Bot-21: HPO sweep every 15 minutes
 wait
