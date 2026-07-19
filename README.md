@@ -60,11 +60,13 @@ Scientific datasets neural compression research using small pre-trained predicto
 
 
 
+
+
 ## Daily Update Summary
-*   **Last Daily Run**: 2026-07-19 12:29:35 UTC
+*   **Last Daily Run**: 2026-07-19 12:34:38 UTC
 *   **Status**: Multi-scale datasets successfully generated & evaluated. RNN Markov trained on multiple variants.
 **Latest Performance Stats (Conventional Baseline):**
-* 2026-07-19 12:29:35,README.md,4754,2194,2.1668,0.2403
-* 2026-07-19 12:29:35,LICENSE,6866,2760,2.4877,0.2
-* 2026-07-19 12:29:35,requirements.txt,86,83,1.0361,0.0236
+* 2026-07-19 12:34:38,README.md,4754,2194,2.1668,0.2716
+* 2026-07-19 12:34:38,LICENSE,6866,2760,2.4877,0.2563
+* 2026-07-19 12:34:38,requirements.txt,86,83,1.0361,0.0291
 
