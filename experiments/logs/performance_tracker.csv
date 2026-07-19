@@ -1,0 +1,4 @@
+Timestamp,File,Original_Bytes,Zlib_Compressed_Bytes,Zlib_Ratio,Neural_Compressed_Bytes,Neural_Ratio,Neural_Time_MS
+2026-07-19 13:33:34,README.md,4754,2194,2.1668,2256,2.1073,4.0855
+2026-07-19 13:33:34,LICENSE,6866,2760,2.4877,3038,2.26,2.2671
+2026-07-19 13:33:34,requirements.txt,86,83,1.0361,45,1.9111,0.0346
