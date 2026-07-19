@@ -96,11 +96,13 @@ Scientific datasets neural compression research using small pre-trained predicto
 
 
 
+
+
 ## Daily Update Summary
-*   **Last Daily Run**: 2026-07-19 13:55:08 UTC
+*   **Last Daily Run**: 2026-07-19 13:59:38 UTC
 *   **Status**: Real neural arithmetic compression tested on multiple scale biological datasets.
 **Latest Performance Stats (Zlib vs Neural Coder):**
-* 2026-07-19 13:55:08,README.md,4754,2194,2.1668,2256,2.1073,1.8764
-* 2026-07-19 13:55:08,LICENSE,6866,2760,2.4877,3038,2.26,2.8241
-* 2026-07-19 13:55:08,requirements.txt,86,83,1.0361,45,1.9111,0.0346
+* 2026-07-19 13:59:35,json,expanded_data_sequence_18.txt,5000000,1022.9133,1.2041,3.1812,1498.9216
+* 2026-07-19 13:59:36,json,expanded_data_sequence_20.txt,5000000,1022.9133,1.2041,3.2857,1451.2312
+* 2026-07-19 13:59:38,json,expanded_data_sequence_11.txt,5000000,1022.9133,1.2041,3.4122,1397.4457
 
