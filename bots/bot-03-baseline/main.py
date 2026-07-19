@@ -9,10 +9,30 @@ import pickle
 # Access Arithmetic Coder
 from bots.bot_09_arithmetic_coder.main import ArithmeticCoder
 
+# Global cache of model and coder initialization matching FIX F4
+_CODER_CACHE = None
+
+def get_cached_coder():
+    global _CODER_CACHE
+    if _CODER_CACHE is not None:
+        return _CODER_CACHE
+        
+    model_path = "src/models/rnn_model.pkl"
+    probabilities = {}
+    if os.path.exists(model_path):
+        with open(model_path, "rb") as f:
+            probabilities = pickle.load(f)
+            
+    # Dummy warm-up call to load packages/ONNX/Torch cache
+    dummy_coder = ArithmeticCoder(probabilities)
+    dummy_coder.compress("A" * 1024) # 1 KB warm-up
+    
+    _CODER_CACHE = dummy_coder
+    return _CODER_CACHE
+
 def main():
     print("Running bot-03-baseline neural evaluation analysis...")
     
-    # Establish Domain Directories mapping F2 specs
     domains = {
         "genomic": "data/genomic",
         "csv": "data/csv",
@@ -20,29 +40,20 @@ def main():
         "json": "data/json"
     }
     
-    # Pre-configure targets so directories exist
     for path in domains.values():
         os.makedirs(path, exist_ok=True)
         
     os.makedirs("experiments/logs", exist_ok=True)
     
-    # Load Predictor probabilities
-    model_path = "src/models/rnn_model.pkl"
-    probabilities = {}
-    if os.path.exists(model_path):
-        with open(model_path, "rb") as f:
-            probabilities = pickle.load(f)
-            
-    coder = ArithmeticCoder(probabilities)
+    # Load warmed steady coder
+    coder = get_cached_coder()
     
     results = []
-    # Collect files per domain
     for domain, folder in domains.items():
         files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         
-        # Ensure we have fallback data to keep tests running clean if collector has not downloaded yet
         if len(files) < 5:
-            print(f"Dataset files missing in domain {domain}. Creating 256KB+ fallback targets.")
+            # Generate dummy 256KB+ sequence targets
             for i in range(1, 6):
                 fallback_file = os.path.join(folder, f"sample_seq_{i}.txt")
                 with open(fallback_file, "w") as f:
@@ -59,16 +70,16 @@ def main():
             if len(data_bytes) == 0:
                 continue
                 
-            # 1. Evaluate Zlib
-            zlib_start = time.time()
             zlib_compressed = zlib.compress(data_bytes, level=9)
             zlib_ratio = len(data_bytes) / len(zlib_compressed) if len(zlib_compressed) > 0 else 1.0
             
-            # 2. Evaluate Neural
+            # steady_state tracking
             neural_start = time.time()
             neural_compressed_size = coder.compress(data_str)
-            neural_ratio = len(data_bytes) / neural_compressed_size if neural_compressed_size > 0 else 1.0
             neural_end = time.time()
+            
+            neural_ratio = len(data_bytes) / neural_compressed_size if neural_compressed_size > 0 else 1.0
+            steady_state_speed = len(data_bytes) / ((neural_end - neural_start) * 1024 * 1024 + 1e-9) # MB/s
             
             results.append({
                 "Timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -77,14 +88,17 @@ def main():
                 "Original_Bytes": len(data_bytes),
                 "Zlib_Ratio": round(zlib_ratio, 4),
                 "Neural_Ratio": round(neural_ratio, 4),
+                "Steady_State_MBps": round(steady_state_speed, 4),
                 "Neural_Time_MS": round((neural_end - neural_start) * 1000, 4)
             })
             
-    # Save CSV Tracker
     csv_file = "experiments/logs/performance_tracker.csv"
     file_exists = os.path.exists(csv_file)
     with open(csv_file, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Timestamp", "Domain", "File", "Original_Bytes", "Zlib_Ratio", "Neural_Ratio", "Neural_Time_MS"])
+        writer = csv.DictWriter(f, fieldnames=[
+            "Timestamp", "Domain", "File", "Original_Bytes", 
+            "Zlib_Ratio", "Neural_Ratio", "Steady_State_MBps", "Neural_Time_MS"
+        ])
         if not file_exists:
             writer.writeheader()
         for res in results:
