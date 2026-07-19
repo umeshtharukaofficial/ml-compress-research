@@ -5,13 +5,13 @@ import json
 def main():
     print("Running bot-02-dataset collector...")
     
-    # Establish domains targets directories matching B4 specifications
+    # Establish domains targets directories matching B4/P6 specifications
     domains = ["genomic", "csv", "sensor", "json"]
     for dom in domains:
         folder = os.path.join("data", dom)
         os.makedirs(folder, exist_ok=True)
         
-    # Write real manifest URLs instead of committing huge raw data sequences
+    # Write real manifest URLs including NASA Battery and MIT ECG sensor datasets
     manifest = {
         "genomic": [
             {"name": "SRR000001_100k.fastq", "url": "https://raw.githubusercontent.com/umeshtharukaofficial/bio-datasets-1M/main/SRR000001_100k.fastq", "size_kb": 1024},
@@ -19,6 +19,10 @@ def main():
         ],
         "csv": [
             {"name": "uci_adult.csv", "url": "https://raw.githubusercontent.com/umeshtharukaofficial/bio-datasets-1M/main/adult.csv", "size_kb": 4000}
+        ],
+        "sensor": [
+            {"name": "mit_bih_ecg.csv", "url": "https://raw.githubusercontent.com/umeshtharukaofficial/bio-datasets-1M/main/ecg.csv", "size_kb": 2048},
+            {"name": "nasa_battery_discharge.csv", "url": "https://raw.githubusercontent.com/umeshtharukaofficial/bio-datasets-1M/main/nasa_battery.csv", "size_kb": 3072}
         ]
     }
     
