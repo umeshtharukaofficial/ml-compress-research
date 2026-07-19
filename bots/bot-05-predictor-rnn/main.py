@@ -3,15 +3,13 @@ import sys
 import pickle
 
 def main():
-    print("Running bot-05-rnn predictor training on all datasets...")
+    print("Running bot-05-rnn predictor training on bio-datasets...")
     
-    files = ["small_sample.txt", "medium_sample.txt", "large_sample.txt"]
+    files = [os.path.join("data", f) for f in os.listdir("data") if os.path.isfile(os.path.join("data", f))]
     all_text = ""
-    for filename in files:
-        filepath = os.path.join("data", filename)
-        if os.path.exists(filepath):
-            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-                all_text += f.read()
+    for filepath in files:
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            all_text += f.read()
                 
     if not all_text:
          return
@@ -34,7 +32,7 @@ def main():
     with open("src/models/rnn_model.pkl", "wb") as f:
         pickle.dump(probabilities, f)
         
-    print("Tiny RNN Markov-predictor trained successfully on multiple scale datasets.")
+    print("Tiny RNN Markov-predictor trained successfully on biological datasets sequence.")
 
 if __name__ == "__main__":
     main()

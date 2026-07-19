@@ -10,19 +10,20 @@ def main():
     os.makedirs("data", exist_ok=True)
     os.makedirs("experiments/logs", exist_ok=True)
     
-    files = ["small_sample.txt", "medium_sample.txt", "large_sample.txt"]
+    # Process files downloaded in /data folder
+    files = [f for f in os.listdir("data") if os.path.isfile(os.path.join("data", f))]
+    if not files:
+        print("Data directory empty. No files to test.")
+        return
+        
     results = []
-    
-    # Check if files exist, run generation fallback if missing
     for filename in files:
         filepath = os.path.join("data", filename)
-        if not os.path.exists(filepath):
-            print(f"File {filename} missing. Creating dummy data.")
-            with open(filepath, "w") as f:
-                f.write("A" * 5000)
-                
         with open(filepath, "rb") as f:
             data = f.read()
+            
+        if len(data) == 0:
+            continue
             
         start_time = time.time()
         compressed = zlib.compress(data, level=9)
@@ -61,7 +62,7 @@ def main():
                 "Time_MS": res["Time_MS"]
             })
             
-    print(f"Baselines successfully updated in {csv_file}")
+    print(f"Baselines successfully updated in {csv_file} for bio-datasets.")
 
 if __name__ == "__main__":
     main()
