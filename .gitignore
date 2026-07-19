@@ -102,5 +102,8 @@ experiments/logs/*.json
 *.zip
 *.fastq
 *.fasta
-*.csv
+experiments/logs/*.json
+!experiments/logs/.gitkeep
+experiments/logs/*.csv
 *.parquet
+
