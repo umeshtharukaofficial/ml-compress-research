@@ -1,0 +1,22 @@
+name: Bot Dispatcher Workflow
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Bot Orchestration Tick
+        run: |
+          python3 bots/bot-20-orchestrator/tick.py
+      - name: Commit and Push results
+        run: |
+          git config user.name "bot-20-orchestrator"
+          git config user.email "bot20@ml-compress.local"
+          git add -A
+          git commit -m "[bot-20] orchestration tick results $(date -u +%FT%TZ)" || exit 0
+          git push

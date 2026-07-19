@@ -1,0 +1,22 @@
+name: Auto Commit 5min Heartbeat
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bot-20 heartbeat
+        run: |
+          python3 bots/bot-20-orchestrator/heartbeat.py
+      - name: commit
+        run: |
+          git config user.name "bot-20-orchestrator"
+          git config user.email "bot20@ml-compress.local"
+          git add -A
+          git commit -m "[bot-20] heartbeat $(date -u +%FT%TZ)" || exit 0
+          git push

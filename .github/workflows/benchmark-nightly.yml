@@ -1,0 +1,28 @@
+name: Nightly Benchmark Suite
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Midnight
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup environment
+        run: |
+          echo "Setting up python and dependencies..."
+      - name: Run baseline benchmarks
+        run: |
+          python3 bots/bot-03-baseline/main.py
+      - name: Run model benchmarks
+        run: |
+          python3 bots/bot-14-benchmark-suite/main.py
+      - name: Commit benchmarks
+        run: |
+          git config user.name "bot-14-bench"
+          git config user.email "bot14@ml-compress.local"
+          git add -A
+          git commit -m "[bot-14] benchmark nightly report $(date -u +%FT%TZ)" || exit 0
+          git push
